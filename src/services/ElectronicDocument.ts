@@ -1,6 +1,6 @@
 
 import xmlgen from "facturacionelectronicapy-xmlgen"
-class Invoice {
+class ElectronicDocument {
 
     protected taxpayer;
     protected billable;
@@ -78,7 +78,7 @@ class Invoice {
                 "distrito" : 143,
                 "distritoDescripcion" : "DOMINGO MARTINEZ DE IRALA",
                 "ciudad" : 3344,
-                "ciudadDescripcion" : "PASO ITA (INDIGENA)",
+                "ciudadDescripcion" : this.billable.client.city,
                 "pais" : "PRY",
                 "paisDescripcion" : "Paraguay",
                 "tipoContribuyente" : 1,
@@ -186,63 +186,65 @@ class Invoice {
                     }]
                 }
             },
-            "items" : [{
-                "codigo" : "A-001",
-                "descripcion": "Producto o Servicio", 
-                "observacion": "Información adicional o complementaria sobre el producto", 
-                "partidaArancelaria" : 4444,
-                "ncm": "ABCD1234",
-                "unidadMedida": 77,
-                "cantidad": 10.5,
-                "precioUnitario": 10800,
-                "cambio": 0,
-                "descuento": 0,
-                "anticipo": 0,
-                "pais" : "PRY",
-                "paisDescripcion" : "Paraguay",
-                "tolerancia" : 1,
-                "toleranciaCantidad" : 1,
-                "toleranciaPorcentaje" : 1,
-                "cdcAnticipo" : "44digitos",
-                "dncp" : {
-                    "codigoNivelGeneral" : "12345678",
-                    "codigoNivelEspecifico" : "1234",
-                    "codigoGtinProducto" : "12345678",
-                    "codigoNivelPaquete" : "12345678"
-                },
-                "ivaTipo" : 1,
-                "ivaBase" : 100,
-                "iva" : 5,
-                "lote" : "A-001",
-                "vencimiento" : "2022-10-30",
-                "numeroSerie" : "",
-                "numeroPedido" : "",
-                "numeroSeguimiento" : "",
-                "importador" : {
-                    "nombre" : "Importadora Parana S.A.",
-                    "direccion" : "Importadora Parana S.A.",
-                    "registroImportador" : "Importadora Parana S.A."
-                },
-                "registroSenave" : "323223",
-                "registroEntidadComercial" : "RI-32/22",
-                "sectorAutomotor" : {
-                    "tipo" : 1,
-                    "chasis" : "45252345235423532",
-                    "color" : "Rojo",
-                    "potencia" : 1500,
-                    "capacidadMotor" : 5,
-                    "capacidadPasajeros" : 5,
-                    "pesoBruto" : 10000,
-                    "pesoNeto" : 8000,
-                    "tipoCombustible" : 9,
-                    "tipoCombustibleDescripcion" : "Vapor",
-                    "numeroMotor" : "323234234234234234",
-                    "capacidadTraccion" : 151.01,
-                    "año" : 2009,
-                    "tipoVehiculo" : "Camioneta",
-                    "cilindradas" : "3500"
+            "items" : this.billable.products.map(( product: any)=>{
+                return {
+                    "codigo" : "A-001",
+                    "descripcion": product.name, 
+                    "observacion": product.name, 
+                    "partidaArancelaria" : 4444,
+                    "ncm": "ABCD1234",
+                    "unidadMedida": 77,
+                    "cantidad": product.quantity,
+                    "precioUnitario": product.unit_price,
+                    "cambio": product.change,
+                    "descuento": product.discount,
+                    "anticipo": product.advancement,
+                    "pais" : "PRY",
+                    "paisDescripcion" : "Paraguay",
+                    "tolerancia" : 1,
+                    "toleranciaCantidad" : 1,
+                    "toleranciaPorcentaje" : 1,
+                    "cdcAnticipo" : "44digitos",
+                    "dncp" : {
+                        "codigoNivelGeneral" : "12345678",
+                        "codigoNivelEspecifico" : "1234",
+                        "codigoGtinProducto" : "12345678",
+                        "codigoNivelPaquete" : "12345678"
+                    },
+                    "ivaTipo" : product.vat_type,
+                    "ivaBase" : product.vat_base,
+                    "iva" : product.vat,
+                    "lote" : "A-001",
+                    "vencimiento" : "2022-10-30",
+                    "numeroSerie" : "",
+                    "numeroPedido" : "",
+                    "numeroSeguimiento" : "",
+                    "importador" : {
+                        "nombre" : "Importadora Parana S.A.",
+                        "direccion" : "Importadora Parana S.A.",
+                        "registroImportador" : "Importadora Parana S.A."
+                    },
+                    "registroSenave" : "323223",
+                    "registroEntidadComercial" : "RI-32/22",
+                    "sectorAutomotor" : {
+                        "tipo" : 1,
+                        "chasis" : "45252345235423532",
+                        "color" : "Rojo",
+                        "potencia" : 1500,
+                        "capacidadMotor" : 5,
+                        "capacidadPasajeros" : 5,
+                        "pesoBruto" : 10000,
+                        "pesoNeto" : 8000,
+                        "tipoCombustible" : 9,
+                        "tipoCombustibleDescripcion" : "Vapor",
+                        "numeroMotor" : "323234234234234234",
+                        "capacidadTraccion" : 151.01,
+                        "año" : 2009,
+                        "tipoVehiculo" : "Camioneta",
+                        "cilindradas" : "3500"
+                    }
                 }
-            }],
+            }),
             "sectorEnergiaElectrica" : {
                 "numeroMedidor" : "132423424235425",
                 "codigoActividad" : 125,
@@ -322,7 +324,7 @@ class Invoice {
                     "documentoTipo" : 1, 
                     "documentoNumero" : "232323-1",
                     "obs" : "",
-                    "numeroMatricula" : "ALTO PARANA",
+                    "numeroMatricula" : "ADS895",
                     "numeroVuelo" : 143
                 },
                 "transportista" : {
@@ -383,3 +385,5 @@ class Invoice {
 
 
 }
+
+export default ElectronicDocument
