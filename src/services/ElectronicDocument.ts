@@ -1,14 +1,13 @@
 
 import xmlgen from "facturacionelectronicapy-xmlgen"
+import TaxPayer from "../types/TaxPayer";
+import Sale from "../types/Sale"
 class ElectronicDocument {
 
-    protected taxpayer;
+    protected taxpayer:TaxPayer;
     protected billable;
 
-    constructor(
-        taxpayer: any,
-        billable: any,
-    ) {
+    constructor(taxpayer: TaxPayer, billable: Sale) {
         this.taxpayer = taxpayer;
         this.billable = billable;
     }
@@ -78,7 +77,7 @@ class ElectronicDocument {
                 "distrito" : 143,
                 "distritoDescripcion" : "DOMINGO MARTINEZ DE IRALA",
                 "ciudad" : 3344,
-                "ciudadDescripcion" : this.billable.client.city,
+                "ciudadDescripcion" :this.billable.client.city,
                 "pais" : "PRY",
                 "paisDescripcion" : "Paraguay",
                 "tipoContribuyente" : 1,

@@ -33,7 +33,7 @@ export default ValidationChainHandler([
     check('billable.client.phone').isString(),
     check('billable.client.email').isEmail(),
 
-    check('billable.products').isArray(),
+    check('billable.products').isArray().notEmpty(),
     check('billable.products.*').isObject(),
     check('billable.products.*.name').isString(),
     check('billable.products.*.unit_price').isFloat(),
