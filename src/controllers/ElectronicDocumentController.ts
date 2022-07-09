@@ -6,7 +6,8 @@ const create = (request:Request,response:Response,next:NextFunction)=>{
     electronicDocument.toXml().then(xml=>{
         response.send(xml);
     }).catch(error=>{
-        response.send(error,500)
+        console.log(error)
+        response.status(500).send(error)
     });
 
 }   

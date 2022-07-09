@@ -186,6 +186,7 @@ class ElectronicDocument {
                 }
             },
             "items" : this.billable.products.map(( product: any)=>{
+                console.log(product)
                 return {
                     "codigo" : "A-001",
                     "descripcion": product.name, 
@@ -210,7 +211,7 @@ class ElectronicDocument {
                         "codigoGtinProducto" : "12345678",
                         "codigoNivelPaquete" : "12345678"
                     },
-                    "ivaTipo" : product.vat_type,
+                    "ivaTipo" : parseInt(product.vat_type),
                     "ivaBase" : product.vat_base,
                     "iva" : product.vat,
                     "lote" : "A-001",
@@ -221,7 +222,9 @@ class ElectronicDocument {
                     "importador" : {
                         "nombre" : "Importadora Parana S.A.",
                         "direccion" : "Importadora Parana S.A.",
-                        "registroImportador" : "Importadora Parana S.A."
+                        "registroImportador" : "Importadora Parana S.A.",
+                        "registroSenave":"123124131223123",
+                        "registroEntidadComercial":"123124131223123"
                     },
                     "registroSenave" : "323223",
                     "registroEntidadComercial" : "RI-32/22",
