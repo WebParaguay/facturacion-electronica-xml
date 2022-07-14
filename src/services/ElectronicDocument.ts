@@ -2,6 +2,9 @@
 import xmlgen from "facturacionelectronicapy-xmlgen"
 import TaxPayer from "../types/TaxPayer";
 import Sale from "../types/Sale"
+import PaymentCondition from "../types/Sale/Payment/Condition";
+import Payment from "../types/Sale/Payment/Payment";
+import Product from "../types/Sale/Product/Product";
 class ElectronicDocument {
 
     protected taxpayer:TaxPayer;
@@ -48,7 +51,7 @@ class ElectronicDocument {
 
     protected formatBillable(): Object {
         return {
-            "tipoDocumento" : this.billable.document_type,
+            "tipoDocumento" : Number(this.billable.document_type),
             "establecimiento" : "001",
             "codigoSeguridadAleatorio" : "298398",
             "punto" : "001",
@@ -57,37 +60,14 @@ class ElectronicDocument {
             "observacion" : "Cualquier informacion de marketing, publicidad, sorteos, promociones para el Receptor",
             "tipoContribuyente" : 1,
             "fecha" : "2020-09-14T10:11:00",
-            "tipoEmision" : this.billable.emission_type,
-            "tipoTransaccion" : this.billable.transaction_type,
+            "tipoEmision" : Number(this.billable.emission_type),
+            "tipoTransaccion" : Number(this.billable.transaction_type),
             "tipoImpuesto" : 1,
             "moneda" : this.billable.currency,
             "condicionAnticipo" : 1,
             "condicionTipoCambio": 1,
             "cambio": 6700,
-            "cliente" : {
-                "contribuyente" : true,
-                "ruc" : this.billable.client.ruc,
-                "razonSocial" : this.billable.client.name,
-                "nombreFantasia" : this.billable.client.name,
-                "tipoOperacion" : 1,
-                "direccion" : this.billable.client.address,
-                "numeroCasa" : "1515",
-                "departamento" : 11,
-                "departamentoDescripcion" : "ALTO PARANA",
-                "distrito" : 143,
-                "distritoDescripcion" : "DOMINGO MARTINEZ DE IRALA",
-                "ciudad" : 3344,
-                "ciudadDescripcion" :this.billable.client.city,
-                "pais" : "PRY",
-                "paisDescripcion" : "Paraguay",
-                "tipoContribuyente" : 1,
-                "documentoTipo" : 1,
-                "documentoNumero" : "2324234",
-                "telefono" :  this.billable.client.phone,
-                "celular" : this.billable.client.phone,
-                "email" : this.billable.client.email,
-                "codigo" : "1548"
-            },
+            "cliente" : this.formatClient(this.billable.client),
             "usuario" : {
                 "documentoTipo" : 1,
                 "documentoNumero" : "157264",
@@ -138,115 +118,10 @@ class ElectronicDocument {
                 "fechaFactura" : "2021-10-21"
             },
             "condicion" : {
-                "tipo" : 1,
-                "entregas" : [{ 
-                    "tipo" : 1,
-                    "monto" : "150000",
-                    "moneda" : "PYG",
-                    "cambio" : 0
-                }, { 
-                    "tipo" : 3,
-                    "monto" : "150000",
-                    "moneda" : "PYG",
-                    "cambio" : 0,
-                    "infoTarjeta" : {
-                        "tipo" : 1,
-                        "tipoDescripcion" : "Dinelco",
-                        "numeroTarjeta": 3232,
-                        "titular" : "Marcos Jara",
-                        "ruc" : "6969549654-1",
-                        "razonSocial" : "Bancard",
-                        "medioPago" : 1,
-                        "codigoAutorizacion" : 232524234
-                    }
-                }, { 
-                    "tipo" : 2,
-                    "monto" : "150000",
-                    "moneda" : "PYG",
-                    "cambio" : 0,
-                    "infoCheque" : {
-                        "numeroCheque": "32323232",
-                        "banco" : "Sudameris"
-                    }
-                }],
-                "credito" : {
-                    "tipo" : 1,
-                    "plazo" : "30 días",
-                    "cuotas" : 2,
-                    "montoEntrega" : 1500000.00,
-                    "infoCuotas" : [{
-                        "moneda" : "PYG",
-                        "monto" : 800000.00,
-                        "vencimiento" : "2021-10-30"
-                    }, {
-                        "moneda" : "PYG",
-                        "monto" : 800000.00,
-                        "vencimiento" : "2021-11-30"
-                    }]
-                }
+                "tipo" : Number(this.billable.payment.condition),
+                ...this.formatPayment(this.billable.payment.condition,this.billable.payment)
             },
-            "items" : this.billable.products.map(( product: any)=>{
-                console.log(product)
-                return {
-                    "codigo" : "A-001",
-                    "descripcion": product.name, 
-                    "observacion": product.name, 
-                    "partidaArancelaria" : 4444,
-                    "ncm": "ABCD1234",
-                    "unidadMedida": 77,
-                    "cantidad": product.quantity,
-                    "precioUnitario": product.unit_price,
-                    "cambio": product.change,
-                    "descuento": product.discount,
-                    "anticipo": product.advancement,
-                    "pais" : "PRY",
-                    "paisDescripcion" : "Paraguay",
-                    "tolerancia" : 1,
-                    "toleranciaCantidad" : 1,
-                    "toleranciaPorcentaje" : 1,
-                    "cdcAnticipo" : "44digitos",
-                    "dncp" : {
-                        "codigoNivelGeneral" : "12345678",
-                        "codigoNivelEspecifico" : "1234",
-                        "codigoGtinProducto" : "12345678",
-                        "codigoNivelPaquete" : "12345678"
-                    },
-                    "ivaTipo" : parseInt(product.vat_type),
-                    "ivaBase" : product.vat_base,
-                    "iva" : product.vat,
-                    "lote" : "A-001",
-                    "vencimiento" : "2022-10-30",
-                    "numeroSerie" : "",
-                    "numeroPedido" : "",
-                    "numeroSeguimiento" : "",
-                    "importador" : {
-                        "nombre" : "Importadora Parana S.A.",
-                        "direccion" : "Importadora Parana S.A.",
-                        "registroImportador" : "Importadora Parana S.A.",
-                        "registroSenave":"123124131223123",
-                        "registroEntidadComercial":"123124131223123"
-                    },
-                    "registroSenave" : "323223",
-                    "registroEntidadComercial" : "RI-32/22",
-                    "sectorAutomotor" : {
-                        "tipo" : 1,
-                        "chasis" : "45252345235423532",
-                        "color" : "Rojo",
-                        "potencia" : 1500,
-                        "capacidadMotor" : 5,
-                        "capacidadPasajeros" : 5,
-                        "pesoBruto" : 10000,
-                        "pesoNeto" : 8000,
-                        "tipoCombustible" : 9,
-                        "tipoCombustibleDescripcion" : "Vapor",
-                        "numeroMotor" : "323234234234234234",
-                        "capacidadTraccion" : 151.01,
-                        "año" : 2009,
-                        "tipoVehiculo" : "Camioneta",
-                        "cilindradas" : "3500"
-                    }
-                }
-            }),
+            "items" : this.billable.products.map(this.formatProduct),
             "sectorEnergiaElectrica" : {
                 "numeroMedidor" : "132423424235425",
                 "codigoActividad" : 125,
@@ -380,7 +255,170 @@ class ElectronicDocument {
         }
     }
 
-    toXml()
+    protected formatProduct( product: Product) : Object
+    {
+        return {
+                "codigo" : "A-001",
+                "descripcion": product.name, 
+                "observacion": product.name, 
+                "partidaArancelaria" : 4444,
+                "ncm": "ABCD1234",
+                "unidadMedida": 77,
+                "cantidad": product.quantity,
+                "precioUnitario": product.unit_price,
+                "cambio": product.change,
+                "descuento": product.discount,
+                "anticipo": product.advancement,
+                "pais" : "PRY",
+                "paisDescripcion" : "Paraguay",
+                "tolerancia" : 1,
+                "toleranciaCantidad" : 1,
+                "toleranciaPorcentaje" : 1,
+                "cdcAnticipo" : "44digitos",
+                "dncp" : {
+                    "codigoNivelGeneral" : "12345678",
+                    "codigoNivelEspecifico" : "1234",
+                    "codigoGtinProducto" : "12345678",
+                    "codigoNivelPaquete" : "12345678"
+                },
+                "ivaTipo" : parseInt(product.vat_type),
+                "ivaBase" : product.vat_base,
+                "iva" : product.vat,
+                "lote" : "A-001",
+                "vencimiento" : "2022-10-30",
+                "numeroSerie" : "",
+                "numeroPedido" : "",
+                "numeroSeguimiento" : "",
+                "importador" : {
+                    "nombre" : "Importadora Parana S.A.",
+                    "direccion" : "Importadora Parana S.A.",
+                    "registroImportador" : "Importadora Parana S.A.",
+                    "registroSenave":"123124131223123",
+                    "registroEntidadComercial":"123124131223123"
+                },
+                "registroSenave" : "323223",
+                "registroEntidadComercial" : "RI-32/22",
+                "sectorAutomotor" : {
+                    "tipo" : 1,
+                    "chasis" : "45252345235423532",
+                    "color" : "Rojo",
+                    "potencia" : 1500,
+                    "capacidadMotor" : 5,
+                    "capacidadPasajeros" : 5,
+                    "pesoBruto" : 10000,
+                    "pesoNeto" : 8000,
+                    "tipoCombustible" : 9,
+                    "tipoCombustibleDescripcion" : "Vapor",
+                    "numeroMotor" : "323234234234234234",
+                    "capacidadTraccion" : 151.01,
+                    "año" : 2009,
+                    "tipoVehiculo" : "Camioneta",
+                    "cilindradas" : "3500"
+                }
+            }
+    }
+
+    protected formatPayment(condition :PaymentCondition,payment:Payment) : Object
+    {
+        if(condition==PaymentCondition.Counted)
+        {
+            return  { 
+                        "entregas":[{
+                            "tipo" : Number(payment.method),
+                            "monto" : payment.amount,
+                            "moneda" : payment.currency,
+                            "cambio" : payment.currency_exchange
+                        }]
+                    }
+        }
+        
+            
+        return {
+
+        }
+        
+        /*
+                "entregas" : [
+                { 
+                    "tipo" : 1,
+                    "monto" : "150000",
+                    "moneda" : "PYG",
+                    "cambio" : 0
+                }, 
+                { 
+                    "tipo" : 3,
+                    "monto" : "150000",
+                    "moneda" : "PYG",
+                    "cambio" : 0,
+                    "infoTarjeta" : {
+                        "tipo" : 1,
+                        "tipoDescripcion" : "Dinelco",
+                        "numeroTarjeta": 3232,
+                        "titular" : "Marcos Jara",
+                        "ruc" : "6969549654-1",
+                        "razonSocial" : "Bancard",
+                        "medioPago" : 1,
+                        "codigoAutorizacion" : 232524234
+                    }
+                }, 
+                { 
+                    "tipo" : 2,
+                    "monto" : "150000",
+                    "moneda" : "PYG",
+                    "cambio" : 0,
+                    "infoCheque" : {
+                        "numeroCheque": "32323232",
+                        "banco" : "Sudameris"
+                    }
+                }
+            ],
+            "credito" : {
+                "tipo" : 1,
+                "plazo" : "30 días",
+                "cuotas" : 2,
+                "montoEntrega" : 1500000.00,
+                "infoCuotas" : [{
+                    "moneda" : "PYG",
+                    "monto" : 800000.00,
+                    "vencimiento" : "2021-10-30"
+                }, {
+                    "moneda" : "PYG",
+                    "monto" : 800000.00,
+                    "vencimiento" : "2021-11-30"
+                }]
+            }
+        */
+    }
+
+    protected formatClient(client:TaxPayer) : Object
+    {
+        return {
+            "contribuyente" : true,
+            "ruc" : client.ruc,
+            "razonSocial" : client.name,
+            "nombreFantasia" : client.name,
+            "tipoOperacion" : 1,
+            "direccion" : client.address,
+            "numeroCasa" : "1515",
+            "departamento" : 11,
+            "departamentoDescripcion" : "ALTO PARANA",
+            "distrito" : 143,
+            "distritoDescripcion" : "DOMINGO MARTINEZ DE IRALA",
+            "ciudad" : 3344,
+            "ciudadDescripcion" :client.city,
+            "pais" : "PRY",
+            "paisDescripcion" : "Paraguay",
+            "tipoContribuyente" : 1,
+            "documentoTipo" : 1,
+            "documentoNumero" : "2324234",
+            "telefono" :  client.phone,
+            "celular" : client.phone,
+            "email" : client.email,
+            "codigo" : "1548"
+        }
+    }
+
+    toXml() : Promise<any>
     {
         return xmlgen.generateXMLDE(this.formatTaxPayer(), this.formatBillable());
     }

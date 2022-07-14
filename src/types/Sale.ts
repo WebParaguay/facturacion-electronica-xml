@@ -12,7 +12,7 @@ type TaxPayer = {
     currency_exchange:Number,
     client:any,
     description:String,
-    payment_method:String,
+    payment:any,
     products:any[],
 }
 

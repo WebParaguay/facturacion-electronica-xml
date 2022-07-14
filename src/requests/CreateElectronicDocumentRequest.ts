@@ -19,10 +19,8 @@ export default ValidationChainHandler([
     check('billable.transaction_type').isIn([1,2,3,4,5,6,7,8,9,10,11,12,13]),
     check('billable.establishment_id').isInt({min:1}),
     check('billable.expedition_point_id').isInt({min:1}),
-    check('billable.currency_exchange').isNumeric(),
-    check('billable.currency').isIn(['PYG']),
     check('billable.description').isString(),
-    check('billable.payment_method').isString(),
+    
 
     check('billable.client').isObject(),
     check('billable.client.name').isString(),
@@ -44,5 +42,12 @@ export default ValidationChainHandler([
     check('billable.products.*.vat_type').isIn(['1','2','3','4']),
     check('billable.products.*.vat_base').isFloat(),
     check('billable.products.*.vat').isIn(['0','5','10']),
+
+    check('billable.payment').isObject(),
+    check('billable.payment.currency_exchange').isNumeric(),
+    check('billable.payment.currency').isIn(['PYG']),
+    check('billable.payment.amount').isFloat(),
+    check('billable.payment.condition').isIn(['1','2']),
+    check('billable.payment.method').isIn(['1']),
 
 ]);
